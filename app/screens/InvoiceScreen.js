@@ -1,15 +1,44 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView,Alert } from 'react-native';
-import { Divider, Card, Title ,Appbar,Button,IconButton} from 'react-native-paper';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { Appbar, Divider, Card, Title, Button, IconButton } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const InvoiceScreen = ({ route }) => {
-//   const { invoice } = route.params; // Assuming invoice data is passed via navigation
-const handleEditInvoice = () => {
+
+const InvoiceScreen = ({ navigation, route }) => {
+//   const { invoice } = route.params; 
+const invoice = {
+    id: '1',
+    date: '2024-08-29',
+    companyName:'sexology',
+    companyAddress:'S4B school block  bjhb hvfhvf habdhvbdsh hvfhveq hveqfvhqef ',
+    comapnyEmail:"admin@gmail.com",
+    companyPhone:'7687678687',
+    clientName: 'John Doe',
+    clientCompany: 'Doe Enterprises',
+    clientAddress:'igwf ihwefhuvwe hwvh',
+    clientEmail:'client@gmail.com',
+    clientPhone:'768787577',
+
+    items: [
+      { description: 'Product XYZ', amount: '500.00' },
+      { description: 'Service ABC', amount: '300.00' },
+      
+    ],
+    subtotal: '800.00',
+    taxRate: '10.00%',
+    tax: '80.00',
+    other: '0.00',
+    total: '880.00',
+    notes: 'Thank you for your business.',
+}
+
+  // Functions to handle button actions
+  const handleEditInvoice = () => {
     // Navigate to form editing screen
-    navigation.navigate('EditInvoiceForm', { invoice });
+    navigation.navigate('EditInvoice', { invoice });
   };
 
-const handleUploadToCloud = () => {
+  const handleUploadToCloud = () => {
     // Implement cloud upload functionality
     Alert.alert('Upload to Cloud', 'Invoice uploaded successfully!');
   };
@@ -17,105 +46,117 @@ const handleUploadToCloud = () => {
   const handleDeleteInvoice = () => {
     // Implement delete functionality
     Alert.alert('Delete Invoice', 'Invoice has been deleted.');
-  }; 
+  };
 
   return (
     <>
-    
-     {/* Appbar/Header with buttons */}
-     <Appbar.Header>
-     <Appbar.BackAction onPress={() => navigation.goBack()}  />
-     <Appbar.Content title="Invoice" />
-     <IconButton icon="pencil" onPress={handleEditInvoice} />
-     <IconButton icon="cloud-upload" onPress={handleUploadToCloud} />
-     <IconButton icon="delete" onPress={handleDeleteInvoice} />
-   </Appbar.Header>
-         {/* Invoice Content */}
+      {/* Appbar/Header with buttons */}
+      <Appbar.Header style={{ backgroundColor: '#6200ee' }}>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Invoice" />
+        <IconButton icon="pencil" onPress={handleEditInvoice} />
+        <IconButton icon="cloud-upload" onPress={handleUploadToCloud} />
+        <IconButton icon="delete" onPress={handleDeleteInvoice} />
+      </Appbar.Header>
 
-    <ScrollView style={styles.container}>
-      <Card style={styles.card}>
-        <Card.Content>
-          <View style={styles.header}>
-            <View style={styles.companyInfo}>
-              <Text style={styles.companyName}>[Company Name]</Text>
-              <Text style={styles.companySlogan}>[Company Slogan]</Text>
-              <Text>[ Address]</Text>
-             
-              <Text>[Phone]</Text>
-              <Text>[Email]</Text>
+      {/* Invoice Content */}
+      <ScrollView style={styles.container}>
+        <Card style={styles.card}>
+          <Card.Content>
+            {/* Header Section */}
+            <View style={styles.header}>
+              <View style={styles.companyInfo}>
+                <Text style={styles.companyName}>{invoice.companyName.toUpperCase()}</Text>
+                
+                <Text style={{maxWidth:200}} >{invoice.companyAddress}</Text>
+                
+                <Text>{invoice.companyPhone}</Text>
+                <Text>{invoice.comapnyEmail}</Text>
+              </View>
+              <View style={styles.invoiceInfo}>
+                <Title style={styles.invoiceTitle}>INVOICE</Title>
+                <Text>Date: {invoice.date}</Text>
+                <Text>Invoice #: {invoice.id}</Text>
+              </View>
             </View>
-            <View style={styles.invoiceInfo}>
-              <Title style={styles.invoiceTitle}>INVOICE</Title>
-                <Text>[Date] </Text>
-              <Text>[Invoice#]</Text>
-            </View>
-          </View>
-          <Divider style={styles.divider} />
+            <Divider style={styles.divider} />
 
-          <View style={styles.billTo}>
-            <Text style={styles.billToTitle}>BILL TO:</Text>
-            <Text>[clientName]</Text>
-            <Text>[clientCompany]</Text>
-            <Text>[ Address]</Text>
-            
-            <Text>[Phone]</Text>
-          </View>
-          <Divider style={styles.divider} />
+            {/* Billing Information */}
+            <View style={styles.billTo}>
+              <Text style={styles.billToTitle}>BILL TO:</Text>
+              <Text>{invoice.clientName}</Text>
+              <Text>{invoice.clientCompany}</Text>
+              <Text style={{maxWidth:200}}>{invoice.clientAddress}</Text>
+              <Text>{invoice.clientEmail}</Text>
+              <Text>{invoice.clientPhone}</Text>
+            </View>
+            <Divider style={styles.divider} />
 
-          <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderText, { flex: 2 }]}>DESCRIPTION</Text>
-            <Text style={[styles.tableHeaderText, { flex: 1, textAlign: 'right' }]}>AMOUNT</Text>
-          </View>
-          <Divider style={styles.divider} />
+            {/* Items Table Header */}
+            <View style={styles.tableHeader}>
+              <Text style={[styles.tableHeaderText, { flex: 2 }]}>DESCRIPTION</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1, textAlign: 'right' }]}>AMOUNT</Text>
+            </View>
+            <Divider style={styles.divider} />
 
-          {/* {invoice.items.map((item, index) => (
-            <View key={index} style={styles.tableRow}>
-              <Text style={[styles.tableRowText, { flex: 2 }]}>
-                {item.description}
-              </Text>
-              <Text style={[styles.tableRowText, { flex: 1, textAlign: 'right' }]}>
-                {item.amount}
-              </Text>
-            </View>
-          ))} */}
-          <Divider style={styles.divider} />
+            {/* Render each item in the invoice */}
+            {invoice.items.map((item, index) => (
+              <View key={index} style={styles.tableRow}>
+                <Text style={[styles.tableRowText, { flex: 2 }]}>{item.description}</Text>
+                <Text style={[styles.tableRowText, { flex: 1, textAlign: 'right' }]}>{item.amount}</Text>
+              </View>
+            ))}
+            <Divider style={styles.divider} />
 
-          <View style={styles.notes}>
-            <Text style={styles.notesTitle}>NOTES</Text>
-            <Text style={styles.notesContent}>[notes]</Text>
-          </View>
+            {/* Notes and Totals */}
+            <View style={styles.notes}>
+              <Text style={styles.notesTitle}>NOTES</Text>
+              <Text style={styles.notesContent}>{invoice.notes}</Text>
+            </View>
 
-          <View style={styles.totals}>
-            <View style={styles.totalsRow}>
-              <Text style={styles.totalsLabel}>Subtotal</Text>
-              <Text style={styles.totalsValue}>[subtotal]</Text>
+            {/* Totals Section */}
+            <View style={styles.totals}>
+              <View style={styles.totalsRow}>
+                <Text style={styles.totalsLabel}>Subtotal</Text>
+                <Text style={styles.totalsValue}>{invoice.subtotal}</Text>
+              </View>
+              <View style={styles.totalsRow}>
+                <Text style={styles.totalsLabel}>Tax Rate</Text>
+                <Text style={styles.totalsValue}>{invoice.taxRate}</Text>
+              </View>
+              <View style={styles.totalsRow}>
+                <Text style={styles.totalsLabel}>Tax</Text>
+                <Text style={styles.totalsValue}>{invoice.tax}</Text>
+              </View>
+              <View style={styles.totalsRow}>
+                <Text style={styles.totalsLabel}>Other</Text>
+                <Text style={styles.totalsValue}>{invoice.other}</Text>
+              </View>
+              <View style={styles.totalsRow}>
+                <Text style={styles.totalsTotalLabel}>TOTAL</Text>
+                <Text style={styles.totalsTotalValue}>{invoice.total}</Text>
+              </View>
             </View>
-            <View style={styles.totalsRow}>
-              <Text style={styles.totalsLabel}>Tax Rate</Text>
-              <Text style={styles.totalsValue}>[taxRate]</Text>
-            </View>
-            <View style={styles.totalsRow}>
-              <Text style={styles.totalsLabel}>Tax</Text>
-              <Text style={styles.totalsValue}>[tax]</Text>
-            </View>
-            <View style={styles.totalsRow}>
-              <Text style={styles.totalsLabel}>Other</Text>
-              <Text style={styles.totalsValue}>[other]</Text>
-            </View>
-            <View style={styles.totalsRow}>
-              <Text style={styles.totalsTotalLabel}>TOTAL</Text>
-              <Text style={styles.totalsTotalValue}>[total]</Text>
-            </View>
-          </View>
-        </Card.Content>
-      </Card>
-    </ScrollView>
+          </Card.Content>
+        </Card>
+      </ScrollView>
+      {/** Download Button */}
+      <Button
+        icon={() => (
+          <MaterialCommunityIcons name="download" size={24} color="#fff" />
+        )}
+        mode="contained"
+        style={[styles.downloadButton, { backgroundColor: '#6200ee' }]}
+        labelStyle={styles.downloadButtonLabel}
+        onPress={() => Alert.alert('Download', 'Invoice downloaded successfully!')} //download logic pdf convertor
+      >
+        Download Invoice
+      </Button>
     </>
   );
 };
 
 const styles = StyleSheet.create({
-   
   container: {
     flex: 1,
     backgroundColor: '#f7f7f7',
@@ -204,6 +245,13 @@ const styles = StyleSheet.create({
   totalsTotalValue: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  downloadButton: {
+    marginTop: 10,
+    alignSelf: 'center', // Center align the button
+  },
+  downloadButtonLabel: {
+    color: '#fff', // Ensure text color matches button background
   },
 });
 

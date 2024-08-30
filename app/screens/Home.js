@@ -3,7 +3,7 @@ import { View, StyleSheet, FlatList, Text, TouchableOpacity } from 'react-native
 import { Appbar, FAB } from 'react-native-paper';
 // import { useNavigation } from '@react-navigation/native'; // Import the navigation hook
 
-const Home = ({ onLogout }) => {
+const Home = ({ onLogout,navigation }) => {
   // const navigation = useNavigation(); // Use the navigation hook
   const [invoices, setInvoices] = useState([
     { id: '1', title: 'Invoice 1' },
@@ -27,7 +27,8 @@ const Home = ({ onLogout }) => {
 
   const handleAddInvoice = () => {
     console.log('Navigate to create invoice');
-    navigation.navigate('CreateInvoice'); // Navigate to the create invoice screen
+
+    navigation.navigate('AddInvoice'); // Navigate to the create invoice screen
   };
 
   return (

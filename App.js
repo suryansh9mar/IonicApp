@@ -1,36 +1,44 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+// Import screens
 import Login from './app/screens/Login';
 import Signup from './app/screens/Signup';
 import Form from './app/screens/Form';
-
 import Home from './app/screens/Home';
-import {
-  SafeAreaView,
-  SafeAreaProvider,
-  SafeAreaInsetsContext,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import EditInvoice from './app/screens/EditInvoice';
 import InvoiceScreen from './app/screens/InvoiceScreen';
+import AddInvoice from './app/screens/AddInvoice';
 
+// Create a Stack Navigator
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <SafeAreaProvider style={styles.container}>
-      <StatusBar / >
-      
-     {/* <Login/> */}
-     {/* <Signup/> */}
-     {/* <Form/> */}
-     {/* <Home/> */}
-     {/* <InvoiceScreen/> */}
-      
-    </SafeAreaProvider>
+    <NavigationContainer>
+      <StatusBar />
+      <Stack.Navigator initialRouteName="Home" screenOptions={{
+    headerShown: false
+  }}>
+        {/* Define all your screens here */}
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Signup" component={Signup} />
+        <Stack.Screen name="Form" component={Form} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="EditInvoice" component={EditInvoice} />
+        <Stack.Screen name="InvoiceScreen" component={InvoiceScreen} />
+        <Stack.Screen name="AddInvoice" component={AddInvoice} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-const styles = StyleSheet.create({
- container:{
-  flex:1,
- }
-})
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+});
