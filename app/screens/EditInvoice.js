@@ -4,32 +4,32 @@ import { Appbar, Button, Divider, Card } from 'react-native-paper';
 
 const EditInvoiceScreen = ({ navigation, route }) => {
   // Assuming invoice data is passed via navigation
-//   const { invoice } = route.params; 
-const invoice = {
-  id: '1',
-  date: '2024-08-29',
-  companyName:'sexology',
-  companyAddress:'S4B school block  bjhb hvfhvf habdhvbdsh hvfhveq hveqfvhqef ',
-  comapnyEmail:"admin@gmail.com",
-  companyPhone:'7687678687',
-  clientName: 'John Doe',
-  clientCompany: 'Doe Enterprises',
-  clientAddress:'igwf ihwefhuvwe hwvh',
-  clientEmail:'client@gmail.com',
-  clientPhone:'768787577',
+  const { invoice } = route.params; 
+// const invoice = {
+//   id: '1',
+//   date: '2024-08-29',
+//   companyName:'sexology',
+//   companyAddress:'S4B school block  bjhb hvfhvf habdhvbdsh hvfhveq hveqfvhqef ',
+//   comapnyEmail:"admin@gmail.com",
+//   companyPhone:'7687678687',
+//   clientName: 'John Doe',
+//   clientCompany: 'Doe Enterprises',
+//   clientAddress:'igwf ihwefhuvwe hwvh',
+//   clientEmail:'client@gmail.com',
+//   clientPhone:'768787577',
 
-  items: [
-    { description: 'Product XYZ', amount: '500.00' },
-    { description: 'Service ABC', amount: '300.00' },
+//   items: [
+//     { description: 'Product XYZ', amount: '500.00' },
+//     { description: 'Service ABC', amount: '300.00' },
     
-  ],
-  subtotal: '800.00',
-  taxRate: '10.00%',
-  tax: '80.00',
-  other: '0.00',
-  total: '880.00',
-  notes: 'Thank you for your business.',
-}
+//   ],
+//   subtotal: '800.00',
+//   taxRate: '10.00%',
+//   tax: '80.00',
+//   other: '0.00',
+//   total: '880.00',
+//   notes: 'Thank you for your business.',
+// }
 
   // State to handle invoice fields for editing
   const [companyName, setCompanyName] = useState(invoice.companyName);

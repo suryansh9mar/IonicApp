@@ -1,36 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, StyleSheet, FlatList, Text, TouchableOpacity } from 'react-native';
 import { Appbar, FAB } from 'react-native-paper';
-// import { useNavigation } from '@react-navigation/native'; // Import the navigation hook
+
 
 const Home = ({ onLogout,navigation }) => {
-  // const navigation = useNavigation(); // Use the navigation hook
+ 
   const [invoices, setInvoices] = useState([
-    { id: '1', title: 'Invoice 1' },
-    { id: '2', title: 'Invoice 2' },
+    {  id: '1',
+      title:'invoice 1',
+      date: '2024-08-29',
+      companyName:'sexology',
+      companyAddress:'S4B school block  bjhb hvfhvf habdhvbdsh hvfhveq hveqfvhqef ',
+      comapnyEmail:"admin@gmail.com",
+      companyPhone:'7687678687',
+      clientName: 'John Doe',
+      clientCompany: 'Doe Enterprises',
+      clientAddress:'igwf ihwefhuvwe hwvh',
+      clientEmail:'client@gmail.com',
+      clientPhone:'768787577',
+  
+      items: [
+        { description: 'Product XYZ', amount: '500.00' },
+        { description: 'Service ABC', amount: '300.00' },
+        
+      ],
+      subtotal: '800.00',
+      taxRate: '10.00%',
+      tax: '80.00',
+      other: '0.00',
+      total: '880.00',
+      notes: 'Thank you for your business.', },
+    { id: '2', title: 'Invoice 2',date: '2024-08-29',
+      companyName:'sexology',
+      companyAddress:'S4B school block  bjhb hvfhvf habdhvbdsh hvfhveq hveqfvhqef ',
+      comapnyEmail:"admin@gmail.com",
+      companyPhone:'7687678687',
+      clientName: 'John Doe',
+      clientCompany: 'Doe Enterprises',
+      clientAddress:'igwf ihwefhuvwe hwvh',
+      clientEmail:'client@gmail.com',
+      clientPhone:'768787577',
+  
+      items: [
+        { description: 'Product XYZ', amount: '500.00' },
+        { description: 'Service ABC', amount: '300.00' },
+        
+      ],
+      subtotal: '800.00',
+      taxRate: '10.00%',
+      tax: '80.00',
+      other: '0.00',
+      total: '880.00',
+      notes: 'Thank you for your business.', },
     { id: '3', title: 'Invoice 3' },
   
     
     // Add invoices here
   ]);
-
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      
+    });
+    return unsubscribe;
+  }, [navigation]);
   const handleInvoice = (invoice) => {
-    // Navigate to the invoice screen with the selected invoice
-    navigation.navigate('InvoiceScreen', { invoice }); // Pass the invoice data to the edit screen
+    
+    navigation.navigate('InvoiceScreen', {invoice,    onDeleteInvoice: () => handleDeleteInvoice(invoice.id)}); 
   };
 
+ 
+
+  const handleAddInvoice = () => {
+    console.log('Navigate to create invoice');
+
+    navigation.navigate('AddInvoice', { onAddInvoice }); 
+  };
+  const handleDeleteInvoice = (invoiceId) => {
+    setInvoices(invoices.filter((invoice) => invoice.id !== invoiceId));
+  };
+  const onAddInvoice = (newInvoice) => {
+    setInvoices([...invoices, newInvoice]);
+  };
   const renderInvoiceItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleInvoice(item)} style={styles.invoiceItem}>
       <Text style={styles.invoiceText}>{item.title}</Text>
     </TouchableOpacity>
   );
+ 
+  
 
-  const handleAddInvoice = () => {
-    console.log('Navigate to create invoice');
-
-    navigation.navigate('AddInvoice'); // Navigate to the create invoice screen
-  };
-
+  
   return (
     <View style={styles.container}>
       {/* Header with title and logout button */}
@@ -39,7 +98,7 @@ const Home = ({ onLogout,navigation }) => {
         <Appbar.Action icon="logout" onPress={onLogout} />
       </Appbar.Header>
 
-      {/* Conditional rendering for empty and non-empty state */}
+      
       {invoices.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No saved invoices.</Text>

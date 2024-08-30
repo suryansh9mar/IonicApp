@@ -1,9 +1,8 @@
-// LoginScreen.js
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Alert, ActivityIndicator ,KeyboardAvoidingView, Platform} from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
 
-const LoginScreen = ({ onLoginSuccess }) => {
+const LoginScreen = ({ navigation,onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -11,13 +10,24 @@ const LoginScreen = ({ onLoginSuccess }) => {
 
   const handleSubmit = () => {
     setLoading((e) => !e);
-    // Placeholder for login/signup functionality
-    Alert.alert(isSignUp ? 'Account created!' : 'Logged in!');
-    onLoginSuccess(); // Call the function passed as a prop
+    if (email === 'admin@gmail.com' && password === 'password') {  //dummy data
+      onLogin(); 
+      Alert.alert(isSignUp ? 'Account created!' : 'Logged in!');
+    
+      navigation.replace('Home'); 
+    } else {
+      Alert.alert('Invalid credentials', 'Please check your email or password.');
+    }
+   
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+
+    <View style={styles.formContainer}>
       <TextInput
         label="Email"
         value={email}
@@ -51,6 +61,7 @@ const LoginScreen = ({ onLoginSuccess }) => {
         {isSignUp ? "Already have an account? Login" : "Don't have an account? Sign Up"}
       </Button>
     </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -59,6 +70,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
+  },
+  formContainer: {
+    paddingHorizontal: 20,
   },
   input: {
     marginBottom: 10,

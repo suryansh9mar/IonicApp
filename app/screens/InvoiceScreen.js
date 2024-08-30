@@ -4,33 +4,33 @@ import { Appbar, Divider, Card, Title, Button, IconButton } from 'react-native-p
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
-const InvoiceScreen = ({ navigation, route }) => {
-//   const { invoice } = route.params; 
-const invoice = {
-    id: '1',
-    date: '2024-08-29',
-    companyName:'sexology',
-    companyAddress:'S4B school block  bjhb hvfhvf habdhvbdsh hvfhveq hveqfvhqef ',
-    comapnyEmail:"admin@gmail.com",
-    companyPhone:'7687678687',
-    clientName: 'John Doe',
-    clientCompany: 'Doe Enterprises',
-    clientAddress:'igwf ihwefhuvwe hwvh',
-    clientEmail:'client@gmail.com',
-    clientPhone:'768787577',
+const InvoiceScreen = ({ navigation,route }) => {
+  const { invoice, onDeleteInvoice } = route.params;
+// const invoice = {
+//     id: '1',
+//     date: '2024-08-29',
+//     companyName:'sexology',
+//     companyAddress:'S4B school block  bjhb hvfhvf habdhvbdsh hvfhveq hveqfvhqef ',
+//     comapnyEmail:"admin@gmail.com",
+//     companyPhone:'7687678687',
+//     clientName: 'John Doe',
+//     clientCompany: 'Doe Enterprises',
+//     clientAddress:'igwf ihwefhuvwe hwvh',
+//     clientEmail:'client@gmail.com',
+//     clientPhone:'768787577',
 
-    items: [
-      { description: 'Product XYZ', amount: '500.00' },
-      { description: 'Service ABC', amount: '300.00' },
+//     items: [
+//       { description: 'Product XYZ', amount: '500.00' },
+//       { description: 'Service ABC', amount: '300.00' },
       
-    ],
-    subtotal: '800.00',
-    taxRate: '10.00%',
-    tax: '80.00',
-    other: '0.00',
-    total: '880.00',
-    notes: 'Thank you for your business.',
-}
+//     ],
+//     subtotal: '800.00',
+//     taxRate: '10.00%',
+//     tax: '80.00',
+//     other: '0.00',
+//     total: '880.00',
+//     notes: 'Thank you for your business.',
+// }
 
   // Functions to handle button actions
   const handleEditInvoice = () => {
@@ -44,9 +44,13 @@ const invoice = {
   };
 
   const handleDeleteInvoice = () => {
-    // Implement delete functionality
     Alert.alert('Delete Invoice', 'Invoice has been deleted.');
+    if (onDeleteInvoice) {
+      onDeleteInvoice(); 
+    }
+    navigation.goBack();
   };
+  
 
   return (
     <>

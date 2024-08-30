@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Appbar, Button, Divider, Card } from 'react-native-paper';
 
-const AddInvoice = ({ navigation }) => {
-  // Initial states for the new invoice fields
+const AddInvoice = ({ navigation,route }) => {
+  const {onAddInvoice}= route.params;
   const [companyName, setCompanyName] = useState('');
   const [companyAddress, setCompanyAddress] = useState('');
   const [companyEmail, setCompanyEmail] = useState('');
@@ -45,6 +45,10 @@ const AddInvoice = ({ navigation }) => {
   const handleSave = () => {
     // Logic to save the new invoice
     Alert.alert('Add Invoice', 'Invoice added successfully!');
+
+     if (onAddInvoice) {
+      onAddInvoice(); 
+    }
     navigation.goBack();
   };
 
