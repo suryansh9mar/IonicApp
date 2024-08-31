@@ -1,104 +1,80 @@
-import React, { useState,useEffect } from 'react';
+import React, { useContext, useState ,useEffect} from 'react';
 import { View, StyleSheet, FlatList, Text, TouchableOpacity } from 'react-native';
 import { Appbar, FAB } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AuthContext  from './AuthContext.js';
 
+const Home = ({ onLogout, navigation }) => {
 
-const Home = ({ onLogout,navigation }) => {
- 
-  const [invoices, setInvoices] = useState([
-    {  id: '1',
-      title:'invoice 1',
-      date: '2024-08-29',
-      companyName:'sexology',
-      companyAddress:'S4B school block  bjhb hvfhvf habdhvbdsh hvfhveq hveqfvhqef ',
-      comapnyEmail:"admin@gmail.com",
-      companyPhone:'7687678687',
-      clientName: 'John Doe',
-      clientCompany: 'Doe Enterprises',
-      clientAddress:'igwf ihwefhuvwe hwvh',
-      clientEmail:'client@gmail.com',
-      clientPhone:'768787577',
+  const [invoices, setInvoices] = useState([]);
   
-      items: [
-        { description: 'Product XYZ', amount: '500.00' },
-        { description: 'Service ABC', amount: '300.00' },
-        
-      ],
-      subtotal: '800.00',
-      taxRate: '10.00%',
-      tax: '80.00',
-      other: '0.00',
-      total: '880.00',
-      notes: 'Thank you for your business.', },
-    { id: '2', title: 'Invoice 2',date: '2024-08-29',
-      companyName:'sexology',
-      companyAddress:'S4B school block  bjhb hvfhvf habdhvbdsh hvfhveq hveqfvhqef ',
-      comapnyEmail:"admin@gmail.com",
-      companyPhone:'7687678687',
-      clientName: 'John Doe',
-      clientCompany: 'Doe Enterprises',
-      clientAddress:'igwf ihwefhuvwe hwvh',
-      clientEmail:'client@gmail.com',
-      clientPhone:'768787577',
-  
-      items: [
-        { description: 'Product XYZ', amount: '500.00' },
-        { description: 'Service ABC', amount: '300.00' },
-        
-      ],
-      subtotal: '800.00',
-      taxRate: '10.00%',
-      tax: '80.00',
-      other: '0.00',
-      total: '880.00',
-      notes: 'Thank you for your business.', },
-    { id: '3', title: 'Invoice 3' },
-  
-    
-    // Add invoices here
-  ]);
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      
-    });
+    const loadInvoices = async () => {
+      try {
+        const savedInvoices = await AsyncStorage.getItem('invoices');
+        if (savedInvoices) {
+          setInvoices(JSON.parse(savedInvoices));
+        }
+      } catch (error) {
+        console.error('Error loading invoices:', error);
+      }
+    };
+    const unsubscribe = navigation.addListener('focus', loadInvoices);
     return unsubscribe;
   }, [navigation]);
   const handleInvoice = (invoice) => {
-    
-    navigation.navigate('InvoiceScreen', {invoice,    onDeleteInvoice: () => handleDeleteInvoice(invoice.id)}); 
+
+    navigation.navigate('InvoiceScreen', { invoice, onDeleteInvoice: handleDeleteInvoice, onUpdateInvoice: handleUpdateInvoice });
+  };
+  const handleStats = ()=>{
+    navigation.navigate('StatsScreen')
+  }
+  const handleLogout = async() => {
+    onLogout();
+    await AsyncStorage.removeItem('userToken');
   };
 
- 
+
 
   const handleAddInvoice = () => {
     console.log('Navigate to create invoice');
 
-    navigation.navigate('AddInvoice', { onAddInvoice }); 
+    navigation.navigate('AddInvoice', { onAddInvoice });
   };
-  const handleDeleteInvoice = (invoiceId) => {
-    setInvoices(invoices.filter((invoice) => invoice.id !== invoiceId));
+  const handleDeleteInvoice = async(invoiceId) => {
+    const updatedInvoices = invoices.filter((invoice) => invoice.id !== invoiceId);
+    setInvoices(updatedInvoices);
+    await AsyncStorage.setItem('invoices', JSON.stringify(updatedInvoices));
+  };
+  const handleUpdateInvoice = async (updatedInvoice) => {
+    const updatedInvoices = invoices.map((invoice) =>
+      invoice.id === updatedInvoice.id ? updatedInvoice : invoice
+    );
+    setInvoices(updatedInvoices);
+    await AsyncStorage.setItem('invoices', JSON.stringify(updatedInvoices));
   };
   const onAddInvoice = (newInvoice) => {
     setInvoices([...invoices, newInvoice]);
   };
   const renderInvoiceItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleInvoice(item)} style={styles.invoiceItem}>
-      <Text style={styles.invoiceText}>{item.title}</Text>
+      <Text style={styles.invoiceText}>{item.tittle}</Text>
+      {item.isPaid?<Text>(amount is paid)</Text>:<Text>(amount is not paid)</Text>}
     </TouchableOpacity>
   );
- 
-  
 
-  
+
+
+
   return (
     <View style={styles.container}>
       {/* Header with title and logout button */}
       <Appbar.Header mode='center-aligned' style={styles.header}>
         <Appbar.Content title="Create Your Invoices" titleStyle={styles.headerTitle} />
-        <Appbar.Action icon="logout" onPress={onLogout} />
+        <Appbar.Action icon="logout"   onPress={handleLogout}mode='contained-tonal' />
       </Appbar.Header>
 
-      
+
       {invoices.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No saved invoices.</Text>
@@ -119,6 +95,15 @@ const Home = ({ onLogout,navigation }) => {
         icon="plus"
         label="Add Invoice"
         onPress={handleAddInvoice}
+        color='#fff'
+      />
+      <FAB
+        style={styles.tabButton}
+        icon="chart-bar"
+        label="Stats"
+        onPress={handleStats}
+        color='#fff'
+        
       />
     </View>
   );
@@ -130,7 +115,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f7f7f7',
   },
   header: {
-    backgroundColor: '#6200EE',
+    backgroundColor: '#2d4bd6',
   },
   headerTitle: {
     color: '#FFFFFF',
@@ -163,7 +148,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 30,
     right: 20,
-    backgroundColor: '#6200EE',
+    backgroundColor: '#2d4bd6',
+
+
+  },
+  tabButton:{
+    position: 'absolute',
+    bottom: 30,
+    left: 20,
+    backgroundColor: '#2d4bd6',
+
   },
 });
 

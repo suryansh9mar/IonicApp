@@ -1,22 +1,55 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert, KeyboardAvoidingView } from 'react-native';
-import { TextInput, Button, Title } from 'react-native-paper';
+import { TextInput, Button, Title,ActivityIndicator } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-const Form = () => {
+const CreateCompany = ({createdCompany}) => {
   const [companyName, setCompanyName] = useState('');
   const [companyAddress, setCompanyAddress] = useState('');
   const [companyEmail, setCompanyEmail] = useState('');
   const [companyContact, setCompanyContact] = useState('');
+  const [companyPassword,setCompanyPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const handleSubmit = async() => {
+    const token = await AsyncStorage.getItem('userToken');
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth-company/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token,
+        },
+        body: JSON.stringify({
+          name: companyName,
+          email: companyEmail,
+          password: companyPassword,
+          address: companyAddress,
 
-  const handleSubmit = () => {
-    Alert.alert('Company Information Submitted', `Name: ${companyName}, Email: ${companyEmail}`);
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        Alert.alert('Success', 'Company created successfully!');
+         
+        createdCompany();
+
+      } else {
+        Alert.alert('Error', data.error);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error('Create company error:', error);
+    }finally {
+      setIsLoading(false); // Hide loader after request
+    }
   };
 
-  const handleSkip = () => {
-    Alert.alert('Skipped Company Info', 'You have skipped the company information.');
-  };
+ 
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -48,6 +81,15 @@ const Form = () => {
           keyboardType="email-address"
           left={<TextInput.Icon icon={() => <MaterialIcons name="email" size={24} />} />}
         />
+         <TextInput
+          label="Company Password"
+          value={companyPassword}
+          onChangeText={setCompanyPassword}
+          style={styles.input}
+          mode="outlined"
+          keyboardType="visible-password"
+          left={<TextInput.Icon icon={() => <MaterialIcons name="lock" size={24} />} />}
+        />
         <TextInput
           label="Company Contact"
           value={companyContact}
@@ -58,12 +100,14 @@ const Form = () => {
           left={<TextInput.Icon icon={() => <MaterialIcons name="phone" size={24} />} />}
         />
 
-        <Button mode="contained" onPress={handleSubmit} style={styles.button}>
-          Submit
-        </Button>
-        <Button mode="outlined" rippleColor="#7a412f" onPress={handleSkip} style={styles.skipButton}>
-          Skip
-        </Button>
+{isLoading ? (
+          <ActivityIndicator animating={true} color="#2d4bd6" size="large" />
+        ) : (
+          <Button mode="contained" onPress={handleSubmit} style={styles.button}>
+            Submit
+          </Button>
+        )}
+        
       </View>
     </KeyboardAvoidingView>
   );
@@ -99,12 +143,9 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 20,
     paddingVertical: 6,
+    backgroundColor:'#2d4bd6',
   },
-  skipButton: {
-    marginTop: 10,
-    alignSelf: 'center',
-    paddingVertical: 6,
-  },
+ 
 });
 
-export default Form;
+export default CreateCompany;

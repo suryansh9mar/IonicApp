@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import Checkbox from 'expo-checkbox';
 import { View, Text, TextInput, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Appbar, Button, Divider, Card } from 'react-native-paper';
+import { Appbar, Button, Divider, Card,  } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const AddInvoice = ({ navigation,route }) => {
-  const {onAddInvoice}= route.params;
+const AddInvoice = ({ navigation, route }) => {
+  const { onAddInvoice } = route.params;
+  const [tittle, setTittle] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [companyAddress, setCompanyAddress] = useState('');
   const [companyEmail, setCompanyEmail] = useState('');
+  const [companyPhone, setCompanyPhone] = useState('');
   const [clientName, setClientName] = useState('');
   const [clientCompany, setClientCompany] = useState('');
   const [clientAddress, setClientAddress] = useState('');
   const [clientEmail, setClientEmail] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
   const [items, setItems] = useState([{ description: '', amount: '' }]);
   const [notes, setNotes] = useState('');
   const [subtotal, setSubtotal] = useState(0);
@@ -18,6 +23,8 @@ const AddInvoice = ({ navigation,route }) => {
   const [tax, setTax] = useState(0);
   const [other, setOther] = useState(0);
   const [total, setTotal] = useState(0);
+  const [isPaid, setPaid] = useState(false);
+ const currentDate = new Date().toISOString();
 
   // Function to calculate subtotal
   const calculateSubtotal = () => {
@@ -42,49 +49,108 @@ const AddInvoice = ({ navigation,route }) => {
     calculateTotal();
   }, [subtotal, taxRate, other]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Logic to save the new invoice
-    Alert.alert('Add Invoice', 'Invoice added successfully!');
+    const newInvoice = {
+      id: Date.now().toString(), // Unique ID
+      date: new Date().toLocaleDateString(),
+      tittle,
+      companyName,
+      companyAddress,
+      companyEmail,
+      companyPhone,
+      clientName,
+      clientCompany,
+      clientAddress,
+      clientEmail,
+      clientPhone,
+      items,
+      subtotal,
+      taxRate,
+      other,
+      total,
+      notes,
+      isPaid,
+      currentDate
+    };
+    if (tittle !== '') {
+      try {
+        const existingInvoices = await AsyncStorage.getItem('invoices');
+        const invoices = existingInvoices ? JSON.parse(existingInvoices) : [];
 
-     if (onAddInvoice) {
-      onAddInvoice(); 
+        // Add the new invoice to the list and save it back to AsyncStorage
+        invoices.push(newInvoice);
+        await AsyncStorage.setItem('invoices', JSON.stringify(invoices));
+
+        Alert.alert('Success', 'Invoice saved successfully');
+
+        // Trigger the callback passed from Home to update the list
+        if (route.params?.onAddInvoice) {
+          route.params.onAddInvoice(newInvoice);
+        }
+
+        // Navigate back to Home screen
+        navigation.goBack();
+      } catch (error) {
+        console.error('Error saving invoice:', error);
+        Alert.alert('Error', 'Failed to save invoice');
+      }
+
     }
-    navigation.goBack();
+    else {
+      Alert.alert('Error', 'Failed to save invoice.Pls enter invoice tittle and data');
+    }
+
   };
 
+
   const handleAddItem = () => {
-    
+
     setItems([...items, { description: '', amount: '' }]);
   };
 
   return (
     <>
       {/* Appbar/Header with buttons */}
-      <Appbar.Header style={{ backgroundColor: '#6200ee' }}>
+      <Appbar.Header style={{ backgroundColor: '#2d4bd6' }} mode='center-aligned'>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Add Invoice" />
-        <Appbar.Action icon="content-save" onPress={handleSave} />
+        <Appbar.Content title="Add Invoice" titleStyle={{ color: '#fff', fontWeight: 'bold' }} />
+        <Appbar.Action icon="content-save" onPress={handleSave} mode='contained-tonal' />
       </Appbar.Header>
 
       <ScrollView style={styles.container}>
         <Card style={styles.card}>
           <Card.Content>
-            {/* Company Info Section */}
             <View style={styles.section}>
-              <Text style={styles.label}>Company Name</Text>
+              <Text style={[styles.label, { paddingLeft: 80 }]}>Invoice Tittle</Text>
+
               <TextInput
                 style={styles.input}
-                value={companyName}
-                onChangeText={setCompanyName}
-                placeholder="Enter company name"
+                value={tittle}
+                onChangeText={setTittle}
+                placeholder="Enter invoice tittle"
               />
-              <Text style={styles.label}>Company Address</Text>
-              <TextInput
-                style={styles.input}
-                value={companyAddress}
-                onChangeText={setCompanyAddress}
-                placeholder="Enter company address"
-              />
+
+            </View>
+            {/* Company Info Section */}
+            <Text style={styles.label}>Company Name</Text>
+            <TextInput
+              style={styles.input}
+              value={companyName}
+              onChangeText={setCompanyName}
+              placeholder="Enter company name"
+            />
+            <Text style={styles.label}>Company Address</Text>
+            <TextInput
+              style={styles.input}
+              value={companyAddress}
+              onChangeText={setCompanyAddress}
+              placeholder="Enter company address"
+            />
+            <View style={styles.section}>
+
+
+
               <Text style={styles.label}>Company Email</Text>
               <TextInput
                 style={styles.input}
@@ -92,6 +158,15 @@ const AddInvoice = ({ navigation,route }) => {
                 onChangeText={setCompanyEmail}
                 placeholder="Enter company email"
               />
+              <Text style={styles.label}>Client Phone</Text>
+              <TextInput
+                style={styles.input}
+                value={clientPhone}
+                onChangeText={setCompanyPhone}
+                keyboardType="numeric"
+                placeholder="Enter client phone no."
+              />
+
             </View>
 
             {/* Client Info Section */}
@@ -123,6 +198,14 @@ const AddInvoice = ({ navigation,route }) => {
                 value={clientEmail}
                 onChangeText={setClientEmail}
                 placeholder="Enter client email"
+              />
+              <Text style={styles.label}>Client Phone</Text>
+              <TextInput
+                style={styles.input}
+                value={clientPhone}
+                onChangeText={setClientPhone}
+                keyboardType="numeric"
+                placeholder="Enter client phone no."
               />
             </View>
 
@@ -168,6 +251,9 @@ const AddInvoice = ({ navigation,route }) => {
                 onChangeText={setNotes}
                 placeholder="Additional notes"
               />
+              <Checkbox style={{margin:8}} value={isPaid} onValueChange={setPaid} />
+              <Text >Amount Paid</Text>
+              
             </View>
 
             {/* Totals Section */}

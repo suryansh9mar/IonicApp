@@ -1,35 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Appbar, Button, Divider, Card } from 'react-native-paper';
+import Checkbox from 'expo-checkbox';
 
 const EditInvoiceScreen = ({ navigation, route }) => {
-  // Assuming invoice data is passed via navigation
-  const { invoice } = route.params; 
-// const invoice = {
-//   id: '1',
-//   date: '2024-08-29',
-//   companyName:'sexology',
-//   companyAddress:'S4B school block  bjhb hvfhvf habdhvbdsh hvfhveq hveqfvhqef ',
-//   comapnyEmail:"admin@gmail.com",
-//   companyPhone:'7687678687',
-//   clientName: 'John Doe',
-//   clientCompany: 'Doe Enterprises',
-//   clientAddress:'igwf ihwefhuvwe hwvh',
-//   clientEmail:'client@gmail.com',
-//   clientPhone:'768787577',
-
-//   items: [
-//     { description: 'Product XYZ', amount: '500.00' },
-//     { description: 'Service ABC', amount: '300.00' },
-    
-//   ],
-//   subtotal: '800.00',
-//   taxRate: '10.00%',
-//   tax: '80.00',
-//   other: '0.00',
-//   total: '880.00',
-//   notes: 'Thank you for your business.',
-// }
+  
+  const { invoice ,onSaveEditedInvoice} = route.params; 
 
   // State to handle invoice fields for editing
   const [companyName, setCompanyName] = useState(invoice.companyName);
@@ -37,7 +13,7 @@ const EditInvoiceScreen = ({ navigation, route }) => {
   const [companyEmail, setCompanyEmail] = useState(invoice.companyEmail);
   const [companyPhone, setCompanyPhone] = useState(invoice.companyPhone);
   const [clientName, setClientName] = useState(invoice.clientName);
-  const [clientPhone, setClientPhone] = useState('');
+  const [clientPhone, setClientPhone] = useState(invoice.clientPhone);
   const [clientCompany, setClientCompany] = useState(invoice.clientCompany);
   const [clientAddress, setClientAddress] = useState(invoice.clientAddress);
   const [clientEmail, setClientEmail] = useState(invoice.clientEmail);
@@ -48,6 +24,7 @@ const EditInvoiceScreen = ({ navigation, route }) => {
   const [tax, setTax] = useState(parseFloat(invoice.tax) || 0);
   const [other, setOther] = useState(parseFloat(invoice.other) || 0);
   const [total, setTotal] = useState(parseFloat(invoice.total) || 0);
+  const [isPaid, setPaid] = useState(invoice.isPaid|| false);
   //  calculate subtotal
   const calculateSubtotal = () => {
     const newSubtotal = items.reduce((acc, item) => acc + parseFloat(item.amount || 0), 0);
@@ -71,25 +48,50 @@ const EditInvoiceScreen = ({ navigation, route }) => {
     calculateTotal();
   }, [subtotal, taxRate, other]);
 
-  const handleSave = () => {
-    // Logic to save the edited invoice
-    Alert.alert('Save Invoice', 'Invoice saved successfully!');
-    navigation.goBack();
-    
-  };
-
+ 
   const handleAddItem = () => {
     // Add a new empty item
     setItems([...items, { description: '', amount: '' }]);
+  };
+  const handleSaveEditedInvoice = async () => {
+    const updatedInvoice = {
+      ...invoice,
+      companyName,
+      companyAddress,
+      companyEmail,
+      companyPhone,
+      clientName,
+      clientCompany,
+      clientAddress,
+      clientEmail,
+      clientPhone,
+      items,
+      subtotal,
+      taxRate,
+      other,
+      total,
+      notes,
+      isPaid,
+    };
+
+    try {
+      await onSaveEditedInvoice(updatedInvoice); // Save the edited invoice using the function passed
+      Alert.alert('Success', 'Invoice updated successfully');
+      navigation.navigate('InvoiceScreen', { updatedInvoice }); // Go back to the Invoice screen
+    } catch (error) {
+      console.error('Error updating invoice:', error);
+      Alert.alert('Error', 'Failed to update invoice');
+    }
   };
 
   return (
     <>
       {/* AppbarHeader  */}
-      <Appbar.Header style={{ backgroundColor: '#6200ee' }}>
+      <Appbar.Header mode='center-aligned' style={{ backgroundColor: '#2d4bd6' }}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Edit Invoice" />
-        <Appbar.Action icon="content-save" onPress={handleSave} />
+        <Appbar.Content title="Edit Invoice"titleStyle={{ color: '#FFFFFF',
+    fontWeight: 'bold',}} />
+        <Appbar.Action icon="content-save" mode='contained' onPress={handleSaveEditedInvoice}  />
       </Appbar.Header>
 
       <ScrollView style={styles.container}>
@@ -215,10 +217,13 @@ const EditInvoiceScreen = ({ navigation, route }) => {
                 style={styles.input}
                 value={notes}
                 onChangeText={setNotes}
-                placeholder="Enter any notes here"
-                multiline
+                placeholder="Additional notes"
               />
+              <Checkbox style={{margin:8}} value={isPaid} onValueChange={setPaid} />
+              <Text >Amount Paid</Text>
+              
             </View>
+
 
             {/* Totals Section */}
             <View style={styles.section}>
