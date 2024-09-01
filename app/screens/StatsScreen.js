@@ -29,7 +29,7 @@ export default function StatsScreen({ navigation }) {
 
           // Calculate revenue by month
           parsedInvoices.forEach(invoice => {
-            const date = new Date(invoice.currentDate); // Assuming invoice.date is in ISO format or something parseable
+            const date = new Date(invoice.currentDate ); // Assuming invoice.date is in ISO format or something parseable
             const month = date.getMonth(); 
             revenueByMonth[month] += invoice.total; // Accumulate the total for each month
           });

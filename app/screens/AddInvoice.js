@@ -158,13 +158,13 @@ const AddInvoice = ({ navigation, route }) => {
                 onChangeText={setCompanyEmail}
                 placeholder="Enter company email"
               />
-              <Text style={styles.label}>Client Phone</Text>
+              <Text style={styles.label}>Company Phone</Text>
               <TextInput
                 style={styles.input}
-                value={clientPhone}
+                value={companyPhone}
                 onChangeText={setCompanyPhone}
                 keyboardType="numeric"
-                placeholder="Enter client phone no."
+                placeholder="Enter company phone no."
               />
 
             </View>
@@ -322,6 +322,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     marginTop: 10,
+    backgroundColor: '#2d4bd6'
   },
   totalsRow: {
     flexDirection: 'row',

@@ -10,30 +10,39 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
-  const register = async (name,email, password) => {
+  const register = async (name, email, password) => {
     try {
+      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL; // Ensure the base URL is defined
       const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name,email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to sign up');
       }
-
+  
       const data = await response.json();
-      setUserToken(data.token);
-      await AsyncStorage.setItem('userToken', data.token);
+      const token = data.token;
+  
+      if (token) {
+        await AsyncStorage.setItem('userToken', JSON.stringify(token)); 
+        setUserToken(token);
+        console.log('Token saved:', token);
+      } else {
+        throw new Error('No token received from the server');
+      }
     } catch (error) {
       Alert.alert('Registration Error', error.message);
       console.error('Registration Error:', error.message);
       throw error;
     }
   };
+  
 
   const login = async (email, password) => {
     try {
@@ -52,7 +61,7 @@ const AuthProvider = ({ children }) => {
 
       const data = await response.json();
       setUserToken(data.token);
-      await AsyncStorage.setItem('userToken', data.token);
+      await AsyncStorage.setItem('userToken', JSON.stringify(token)); 
     } catch (error) {
       Alert.alert('Login Error', error.message);
       console.error('Login Error:', error.message);

@@ -34,6 +34,7 @@ export default function App() {
         console.error('Error fetching login status', error);
       } finally {
         setLoading(false);
+        // await AsyncStorage.removeItem('userToken');
       }
     };
     checkLoginStatus();

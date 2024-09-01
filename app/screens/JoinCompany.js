@@ -1,40 +1,52 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {  ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 
-const JoinCompany = ({ navigation ,joinedCompany}) => {
+const JoinCompany = ({ navigation, joinedCompany }) => {
   const [companyEmail, setCompanyEmail] = useState('');
   const [companyPassword, setCompanyPassword] = useState('');
   const [isLoading, setLoading] = useState(false);
 
   const handleJoinCompany = async () => {
-    const token = await AsyncStorage.getItem('userToken');
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+    const token = JSON.parse(await AsyncStorage.getItem('userToken')); 
     console.log(token);
+    
+
+    
+    if (!token) {
+      Alert.alert('Error', 'User token is missing. Please log in again.');
+      return; // Exit if the token is missing
+    }
+    
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
     
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/auth-company/register`, {
+      const response = await fetch(`${API_BASE_URL}/auth-company/join`, {  
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': token,
         },
-        body: JSON.stringify({ email: companyEmail, password: companyPassword }),
+        body: JSON.stringify({ 
+          email: companyEmail.trim(), 
+          password: companyPassword 
+        }),
       });
-
+  
       const data = await response.json();
-      if (data.success) {
+  
+      if (response.ok) {
         Alert.alert('Success', 'Joined company successfully!');
         joinedCompany();
       } else {
-        Alert.alert('Error', data.error);
-        setLoading(false);
+        Alert.alert('Error', data.error || 'Failed to join the company');
       }
     } catch (error) {
       console.error('Join company error:', error);
-    }finally{
+      Alert.alert('Error', 'An error occurred while joining the company.');
+    } finally {
       setLoading(false);
     }
   };
@@ -55,10 +67,11 @@ const JoinCompany = ({ navigation ,joinedCompany}) => {
         secureTextEntry
         style={styles.input}
       />
-       {isLoading ? (
+      {isLoading ? (
         <ActivityIndicator animating={true} color="#2d4bd6" size="large" style={styles.loader} />
-      ) :<Button title="Join" onPress={handleJoinCompany} color={'#2d4bd6'}/>}
-      
+      ) : (
+        <Button title="Join" onPress={handleJoinCompany} color={'#2d4bd6'} />
+      )}
     </View>
   );
 };

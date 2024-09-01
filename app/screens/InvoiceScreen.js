@@ -144,7 +144,7 @@ const InvoiceScreen = ({ navigation,route }) => {
   
             <h2>Invoice Details</h2>
             <p><strong>Date:</strong> ${invoice.date}</p>
-            <p><strong>Invoice #:</strong> ${invoice.id}</p>
+            <p><strong> #:</strong> ${invoice.id}</p>
   
             <h2>Items</h2>
             <table class="details-table">
