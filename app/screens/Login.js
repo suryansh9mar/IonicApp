@@ -6,13 +6,13 @@ import { AuthContext } from './AuthContext';
 
 const LoginScreen = ({ navigation, onLogin }) => {
   const [email, setEmail] = useState('');
-  const [name,setName]=useState('');
+  
 
   const [password, setPassword] = useState('');
   const [isLoading,setLoading]= useState(false);
   
 
-  const { login,loading } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async () => {
     setLoading(true)

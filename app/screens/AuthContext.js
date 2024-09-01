@@ -46,6 +46,8 @@ const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+      
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -53,21 +55,23 @@ const AuthProvider = ({ children }) => {
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to log in');
       }
-
+  
       const data = await response.json();
+      console.log('Received Token:', data.token); // Debugging line
+  
       setUserToken(data.token);
-      await AsyncStorage.setItem('userToken', JSON.stringify(token)); 
+      await AsyncStorage.setItem('userToken', data.token); // Store token correctly
     } catch (error) {
       Alert.alert('Login Error', error.message);
       console.error('Login Error:', error.message);
-      throw error;
     }
   };
+  
   const logout = async () => {
     setUserToken(null);
     await AsyncStorage.removeItem('userToken');
