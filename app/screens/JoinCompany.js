@@ -9,7 +9,7 @@ const JoinCompany = ({ navigation, joinedCompany }) => {
   const [isLoading, setLoading] = useState(false);
 
   const handleJoinCompany = async () => {
-    const token = JSON.parse(await AsyncStorage.getItem('userToken')); 
+    const token = await AsyncStorage.getItem('userToken'); 
     console.log(token);
     
 

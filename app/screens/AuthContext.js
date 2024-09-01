@@ -12,7 +12,7 @@ const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL; // Ensure the base URL is defined
+      
       const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: {
@@ -30,8 +30,8 @@ const AuthProvider = ({ children }) => {
       const token = data.token;
   
       if (token) {
-        await AsyncStorage.setItem('userToken', JSON.stringify(token)); 
-        setUserToken(token);
+        await AsyncStorage.setItem('userToken', data.token); 
+        setUserToken(data.token);
         console.log('Token saved:', token);
       } else {
         throw new Error('No token received from the server');
@@ -47,7 +47,7 @@ const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
-      
+  
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -56,21 +56,28 @@ const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email, password }),
       });
   
+      const data = await response.json(); // Read the response body once
+  
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to log in');
+        // If response is not OK, handle the error using the message from the server
+        throw new Error(data.message || 'Failed to log in');
       }
   
-      const data = await response.json();
       console.log('Received Token:', data.token); // Debugging line
   
-      setUserToken(data.token);
-      await AsyncStorage.setItem('userToken', data.token); // Store token correctly
+      // Ensure token is set correctly
+      if (data.token) {
+        setUserToken(data.token);
+        await AsyncStorage.setItem('userToken', data.token); // Store the token without JSON.stringify
+      } else {
+        throw new Error('No token received from the server');
+      }
     } catch (error) {
       Alert.alert('Login Error', error.message);
       console.error('Login Error:', error.message);
     }
   };
+  
   
   const logout = async () => {
     setUserToken(null);

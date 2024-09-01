@@ -13,7 +13,7 @@ const CreateCompany = ({createdCompany}) => {
   const [isLoading, setIsLoading] = useState(false);
   
   const handleSubmit = async() => {
-    const token = JSON.parse(await AsyncStorage.getItem('userToken'));
+    const token = await AsyncStorage.getItem('userToken');
     const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
     setIsLoading(true);
     try {
